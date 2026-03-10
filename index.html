@@ -2,19 +2,88 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Unicorn Love Catch Ultimate</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Unicorn Love Catch</title>
+
 <style>
-body{margin:0;overflow:hidden;font-family:"Trebuchet MS",sans-serif;background:#ffd6f5;text-align:center}
-canvas{display:block;margin:auto}
-#ui{position:absolute;top:10px;left:0;right:0;color:white;font-weight:bold;font-size:20px;text-shadow:0 0 10px #ff69b4}
-#loveBar{width:240px;height:18px;background:#ffffff55;border-radius:14px;margin:auto;margin-top:6px;overflow:hidden}
-#loveFill{height:100%;width:0%;background:linear-gradient(90deg,#ff4da6,#ff99cc)}
-#combo{font-size:22px;color:#fff;text-shadow:0 0 10px #ff1493;height:24px}
-#start,#end{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(#ffb6ec,#ffd6f5);color:white}
-h1{font-size:44px;text-shadow:0 0 14px #ff69b4}
-button{padding:12px 28px;font-size:18px;border:none;border-radius:14px;background:#ff69b4;color:white;cursor:pointer;margin-top:20px;box-shadow:0 6px 12px rgba(0,0,0,0.25)}
+body{
+ margin:0;
+ overflow:hidden;
+ font-family:"Trebuchet MS",sans-serif;
+ background:#ffd6f5;
+ text-align:center;
+}
+
+canvas{
+ display:block;
+ margin:auto;
+ width:100vw;
+ height:100vh;
+ max-width:480px;
+ max-height:640px;
+}
+
+#ui{
+ position:absolute;
+ top:10px;
+ left:0;
+ right:0;
+ color:white;
+ font-weight:bold;
+ font-size:20px;
+ text-shadow:0 0 10px #ff69b4;
+}
+
+#loveBar{
+ width:240px;
+ height:18px;
+ background:#ffffff55;
+ border-radius:14px;
+ margin:auto;
+ margin-top:6px;
+ overflow:hidden;
+}
+
+#loveFill{
+ height:100%;
+ width:0%;
+ background:linear-gradient(90deg,#ff4da6,#ff99cc);
+}
+
+#combo{
+ font-size:22px;
+ color:#fff;
+ text-shadow:0 0 10px #ff1493;
+ height:24px;
+}
+
+#start,#end{
+ position:absolute;
+ top:0;
+ left:0;
+ width:100%;
+ height:100%;
+ display:flex;
+ flex-direction:column;
+ align-items:center;
+ justify-content:center;
+ background:linear-gradient(#ffb6ec,#ffd6f5);
+ color:white;
+}
+
+button{
+ padding:12px 28px;
+ font-size:18px;
+ border:none;
+ border-radius:14px;
+ background:#ff69b4;
+ color:white;
+ cursor:pointer;
+ margin-top:20px;
+}
 </style>
 </head>
+
 <body>
 
 <div id="ui" style="display:none">
@@ -37,16 +106,38 @@ Score: <span id="score">0</span> | Lives: <span id="lives">5</span>
 <canvas id="game" width="480" height="640"></canvas>
 
 <script>
+
 const canvas=document.getElementById("game");
 const ctx=canvas.getContext("2d");
 
-// SOUND EFFECTS
-const heartSound=new Audio("https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8c8a73467.mp3?filename=correct-2-46134.mp3");
-const breakSound=new Audio("https://cdn.pixabay.com/download/audio/2022/03/15/audio_4c1d1e2f6c.mp3?filename=error-126627.mp3");
-const goldSound=new Audio("https://cdn.pixabay.com/download/audio/2021/08/04/audio_c6ccf8e3b3.mp3?filename=magic-sparkle-10085.mp3");
-const winSound=new Audio("https://cdn.pixabay.com/download/audio/2022/03/15/audio_9fbc3a36d7.mp3?filename=success-1-6297.mp3");
+/* RESPONSIVE CANVAS */
+
+function resizeCanvas(){
+ let ratio=480/640;
+ let w=window.innerWidth;
+ let h=window.innerHeight;
+
+ if(w/h>ratio){w=h*ratio;}
+ else{h=w/ratio;}
+
+ canvas.style.width=w+"px";
+ canvas.style.height=h+"px";
+}
+
+resizeCanvas();
+window.addEventListener("resize",resizeCanvas);
+
+/* SOUND */
+
+const heartSound=new Audio("https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8c8a73467.mp3");
+const breakSound=new Audio("https://cdn.pixabay.com/download/audio/2022/03/15/audio_4c1d1e2f6c.mp3");
+const goldSound=new Audio("https://cdn.pixabay.com/download/audio/2021/08/04/audio_c6ccf8e3b3.mp3");
+const winSound=new Audio("https://cdn.pixabay.com/download/audio/2022/03/15/audio_9fbc3a36d7.mp3");
+
+/* GAME VARIABLES */
 
 let player={x:220,y:540,w:60,h:60,speed:7};
+
 let items=[];
 let particles=[];
 let stars=[];
@@ -59,13 +150,17 @@ let running=false;
 let time=0;
 let difficulty=1;
 
+/* BACKGROUND */
+
 for(let i=0;i<50;i++){
  stars.push({x:Math.random()*480,y:Math.random()*640,size:1+Math.random()*2});
 }
 
 for(let i=0;i<6;i++){
- clouds.push({x:Math.random()*480,y:Math.random()*220,size:30+Math.random()*40,speed:0.2+Math.random()*0.4});
+ clouds.push({x:Math.random()*480,y:Math.random()*200,size:30+Math.random()*40,speed:0.2+Math.random()*0.4});
 }
+
+/* START GAME */
 
 function startGame(){
  document.getElementById("start").style.display="none";
@@ -73,7 +168,10 @@ function startGame(){
  running=true;
 }
 
+/* SPAWN ITEMS */
+
 function spawn(){
+
  if(!running) return;
 
  let r=Math.random();
@@ -89,9 +187,12 @@ function spawn(){
   size:34,
   speed:(2+Math.random()*2)*difficulty
  });
+
 }
 
 setInterval(spawn,700);
+
+/* CONTROLS */
 
 let keys={};
 
@@ -104,29 +205,35 @@ canvas.addEventListener("touchmove",e=>{
  player.x=x-player.w/2;
 });
 
+/* PARTICLES */
+
 function sparkle(x,y,color="white"){
  for(let i=0;i<12;i++){
   particles.push({x,y,vx:(Math.random()-0.5)*4,vy:(Math.random()-0.5)*4,life:35,color});
  }
 }
 
-function playSound(sound){
- sound.currentTime=0;
- sound.play();
+function playSound(s){
+ s.currentTime=0;
+ s.play();
 }
 
+/* UPDATE */
+
 function update(){
+
  if(!running) return;
 
  time+=0.05;
  difficulty=1+score*0.02;
 
- if(keys['ArrowLeft']) player.x-=player.speed;
- if(keys['ArrowRight']) player.x+=player.speed;
+ if(keys["ArrowLeft"]) player.x-=player.speed;
+ if(keys["ArrowRight"]) player.x+=player.speed;
 
  player.x=Math.max(0,Math.min(canvas.width-player.w,player.x));
 
  items.forEach((it,i)=>{
+
   it.y+=it.speed;
 
   if(it.y+it.size>player.y && it.x+it.size>player.x && it.x<player.x+player.w){
@@ -155,6 +262,7 @@ function update(){
   }
 
   if(it.y>canvas.height) items.splice(i,1);
+
  });
 
  particles.forEach((p,i)=>{
@@ -173,19 +281,26 @@ function update(){
  document.getElementById("lives").innerText=lives;
  document.getElementById("loveFill").style.width=Math.min(score*2,100)+"%";
 
- if(combo>=3) document.getElementById("combo").innerText="✨ Combo x"+combo;
- else document.getElementById("combo").innerText="";
+ if(combo>=3)
+  document.getElementById("combo").innerText="✨ Combo x"+combo;
+ else
+  document.getElementById("combo").innerText="";
 
- if(score>=50) {
+ if(score>=50){
   playSound(winSound);
-  endGame("You filled the world with love 🦄💖\nI made this game just for you ❤️");
+  endGame("You filled the world with love 🦄💖");
  }
 
- if(lives<=0) endGame("Too many broken hearts 💔");
+ if(lives<=0)
+  endGame("Too many broken hearts 💔");
+
 }
+
+/* DRAW */
 
 function drawCloud(x,y,s){
  ctx.fillStyle="white";
+
  ctx.beginPath();
  ctx.arc(x,y,s*0.3,0,Math.PI*2);
  ctx.arc(x+s*0.3,y-10,s*0.4,0,Math.PI*2);
@@ -194,7 +309,9 @@ function drawCloud(x,y,s){
 }
 
 function drawRainbow(){
- const colors=['#ff4da6','#ff7ac3','#ffa6d9','#ffcce9'];
+
+ const colors=["#ff4da6","#ff7ac3","#ffa6d9","#ffcce9"];
+
  colors.forEach((c,i)=>{
   ctx.beginPath();
   ctx.strokeStyle=c;
@@ -202,9 +319,11 @@ function drawRainbow(){
   ctx.arc(canvas.width/2,canvas.height+120,200+i*10,Math.PI,2*Math.PI);
   ctx.stroke();
  });
+
 }
 
 function draw(){
+
  ctx.clearRect(0,0,canvas.width,canvas.height);
 
  drawRainbow();
@@ -215,22 +334,28 @@ function draw(){
  clouds.forEach(c=>drawCloud(c.x,c.y,c.size));
 
  let float=Math.sin(time)*6;
- ctx.font="52px serif";
+
+ ctx.font="60px serif";
  ctx.fillText("🦄",player.x,player.y+40+float);
 
  items.forEach(it=>{
+
   ctx.font="34px serif";
 
   if(it.type==="love") ctx.fillText("❤️",it.x,it.y);
   if(it.type==="broken") ctx.fillText("💔",it.x,it.y);
   if(it.type==="gold") ctx.fillText("💖",it.x,it.y);
+
  });
 
  particles.forEach(p=>{
   ctx.fillStyle=p.color;
   ctx.fillRect(p.x,p.y,3,3);
  });
+
 }
+
+/* GAME LOOP */
 
 function loop(){
  update();
@@ -245,6 +370,7 @@ function endGame(msg){
 }
 
 loop();
+
 </script>
 
 </body>
