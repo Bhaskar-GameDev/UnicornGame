@@ -7,79 +7,76 @@
 <title>Unicorn Love Catch</title>
 
 <style>
-
 body{
- margin:0;
- overflow:hidden;
- font-family:"Trebuchet MS",sans-serif;
- background:#ffd6f5;
- text-align:center;
+margin:0;
+overflow:hidden;
+font-family:"Trebuchet MS",sans-serif;
+background:#ffd6f5;
+text-align:center;
 }
 
 canvas{
- display:block;
- margin:auto;
+display:block;
 }
 
 #ui{
- position:absolute;
- top:10px;
- left:0;
- right:0;
- color:white;
- font-weight:bold;
- font-size:20px;
- text-shadow:0 0 10px #ff69b4;
+position:absolute;
+top:10px;
+left:0;
+right:0;
+color:white;
+font-weight:bold;
+font-size:20px;
+text-shadow:0 0 10px #ff69b4;
 }
 
 #loveBar{
- width:240px;
- height:18px;
- background:#ffffff55;
- border-radius:14px;
- margin:auto;
- margin-top:6px;
- overflow:hidden;
+width:240px;
+height:18px;
+background:#ffffff55;
+border-radius:14px;
+margin:auto;
+margin-top:6px;
+overflow:hidden;
 }
 
 #loveFill{
- height:100%;
- width:0%;
- background:linear-gradient(90deg,#ff4da6,#ff99cc);
+height:100%;
+width:0%;
+background:linear-gradient(90deg,#ff4da6,#ff99cc);
 }
 
 #combo{
- font-size:22px;
- color:#fff;
- text-shadow:0 0 10px #ff1493;
- height:24px;
+font-size:22px;
+color:#fff;
+text-shadow:0 0 10px #ff1493;
+height:24px;
 }
 
 #start,#end{
- position:absolute;
- top:0;
- left:0;
- width:100%;
- height:100%;
- display:flex;
- flex-direction:column;
- align-items:center;
- justify-content:center;
- background:linear-gradient(#ffb6ec,#ffd6f5);
- color:white;
+position:absolute;
+top:0;
+left:0;
+width:100%;
+height:100%;
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+background:linear-gradient(#ffb6ec,#ffd6f5);
+color:white;
 }
 
 button{
- padding:12px 28px;
- font-size:18px;
- border:none;
- border-radius:14px;
- background:#ff69b4;
- color:white;
- cursor:pointer;
- margin-top:20px;
+padding:12px 28px;
+font-size:18px;
+border:none;
+border-radius:14px;
+background:#ff69b4;
+color:white;
+cursor:pointer;
+margin-top:20px;
 }
-
 </style>
 </head>
 
@@ -109,36 +106,20 @@ Score: <span id="score">0</span> | Lives: <span id="lives">5</span>
 const canvas=document.getElementById("game");
 const ctx=canvas.getContext("2d");
 
-let scale=1;
-
 function resizeCanvas(){
-
- const baseWidth=480;
- const baseHeight=640;
-
- const w=window.innerWidth;
- const h=window.innerHeight;
-
- scale=Math.min(w/baseWidth,h/baseHeight);
-
- canvas.width=baseWidth*scale;
- canvas.height=baseHeight*scale;
-
+canvas.width=window.innerWidth;
+canvas.height=window.innerHeight;
 }
 
 resizeCanvas();
 window.addEventListener("resize",resizeCanvas);
-
-/* SOUND */
 
 const heartSound=new Audio("https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8c8a73467.mp3");
 const breakSound=new Audio("https://cdn.pixabay.com/download/audio/2022/03/15/audio_4c1d1e2f6c.mp3");
 const goldSound=new Audio("https://cdn.pixabay.com/download/audio/2021/08/04/audio_c6ccf8e3b3.mp3");
 const winSound=new Audio("https://cdn.pixabay.com/download/audio/2022/03/15/audio_9fbc3a36d7.mp3");
 
-/* GAME VARIABLES */
-
-let player={x:220,y:540,w:60,h:60,speed:7};
+let player={x:200,y:500,w:60,h:60,speed:8};
 
 let items=[];
 let particles=[];
@@ -152,49 +133,41 @@ let running=false;
 let time=0;
 let difficulty=1;
 
-/* BACKGROUND */
-
 for(let i=0;i<50;i++){
- stars.push({x:Math.random()*480,y:Math.random()*640,size:1+Math.random()*2});
+stars.push({x:Math.random()*window.innerWidth,y:Math.random()*window.innerHeight,size:1+Math.random()*2});
 }
 
 for(let i=0;i<6;i++){
- clouds.push({x:Math.random()*480,y:Math.random()*200,size:30+Math.random()*40,speed:0.2+Math.random()*0.4});
+clouds.push({x:Math.random()*window.innerWidth,y:Math.random()*200,size:30+Math.random()*40,speed:0.2+Math.random()*0.4});
 }
-
-/* START GAME */
 
 function startGame(){
- document.getElementById("start").style.display="none";
- document.getElementById("ui").style.display="block";
- running=true;
+document.getElementById("start").style.display="none";
+document.getElementById("ui").style.display="block";
+running=true;
 }
-
-/* SPAWN ITEMS */
 
 function spawn(){
 
- if(!running) return;
+if(!running) return;
 
- let r=Math.random();
- let type="love";
+let r=Math.random();
+let type="love";
 
- if(r>0.8) type="broken";
- if(r>0.95) type="gold";
+if(r>0.8) type="broken";
+if(r>0.95) type="gold";
 
- items.push({
-  x:Math.random()*(canvas.width-40),
-  y:-40,
-  type:type,
-  size:34*scale,
-  speed:(2+Math.random()*2)*difficulty*scale
- });
+items.push({
+x:Math.random()*(canvas.width-60),
+y:-40,
+type:type,
+size:34,
+speed:(2+Math.random()*2)*difficulty
+});
 
 }
 
 setInterval(spawn,700);
-
-/* CONTROLS */
 
 let keys={};
 
@@ -202,178 +175,166 @@ document.addEventListener("keydown",e=>keys[e.key]=true);
 document.addEventListener("keyup",e=>keys[e.key]=false);
 
 canvas.addEventListener("touchmove",e=>{
- const rect=canvas.getBoundingClientRect();
- const x=e.touches[0].clientX-rect.left;
- player.x=x-player.w/2;
+const rect=canvas.getBoundingClientRect();
+const x=e.touches[0].clientX-rect.left;
+player.x=x-player.w/2;
 });
 
-/* PARTICLES */
-
 function sparkle(x,y,color="white"){
- for(let i=0;i<12;i++){
-  particles.push({x,y,vx:(Math.random()-0.5)*4,vy:(Math.random()-0.5)*4,life:35,color});
- }
+for(let i=0;i<12;i++){
+particles.push({x,y,vx:(Math.random()-0.5)*4,vy:(Math.random()-0.5)*4,life:35,color});
+}
 }
 
 function playSound(s){
- s.currentTime=0;
- s.play();
+s.currentTime=0;
+s.play();
 }
-
-/* UPDATE */
 
 function update(){
 
- if(!running) return;
+if(!running) return;
 
- time+=0.05;
- difficulty=1+score*0.02;
+time+=0.05;
+difficulty=1+score*0.02;
 
- player.w=60*scale;
- player.h=60*scale;
- player.speed=7*scale;
- player.y=canvas.height-player.h-20;
+player.y=canvas.height-100;
 
- if(keys["ArrowLeft"]) player.x-=player.speed;
- if(keys["ArrowRight"]) player.x+=player.speed;
+if(keys["ArrowLeft"]) player.x-=player.speed;
+if(keys["ArrowRight"]) player.x+=player.speed;
 
- player.x=Math.max(0,Math.min(canvas.width-player.w,player.x));
+player.x=Math.max(0,Math.min(canvas.width-player.w,player.x));
 
- items.forEach((it,i)=>{
+items.forEach((it,i)=>{
 
-  it.y+=it.speed;
+it.y+=it.speed;
 
-  if(it.y+it.size>player.y && it.x+it.size>player.x && it.x<player.x+player.w){
+if(it.y+it.size>player.y && it.x+it.size>player.x && it.x<player.x+player.w){
 
-   if(it.type==="love"){
-    score++;
-    combo++;
-    sparkle(it.x,it.y,"pink");
-    playSound(heartSound);
-   }
+if(it.type==="love"){
+score++;
+combo++;
+sparkle(it.x,it.y,"pink");
+playSound(heartSound);
+}
 
-   if(it.type==="gold"){
-    score+=5;
-    combo+=3;
-    sparkle(it.x,it.y,"gold");
-    playSound(goldSound);
-   }
+if(it.type==="gold"){
+score+=5;
+combo+=3;
+sparkle(it.x,it.y,"gold");
+playSound(goldSound);
+}
 
-   if(it.type==="broken"){
-    lives--;
-    combo=0;
-    playSound(breakSound);
-   }
+if(it.type==="broken"){
+lives--;
+combo=0;
+playSound(breakSound);
+}
 
-   items.splice(i,1);
-  }
+items.splice(i,1);
+}
 
-  if(it.y>canvas.height) items.splice(i,1);
+if(it.y>canvas.height) items.splice(i,1);
 
- });
+});
 
- particles.forEach((p,i)=>{
-  p.x+=p.vx;
-  p.y+=p.vy;
-  p.life--;
-  if(p.life<=0) particles.splice(i,1);
- });
+particles.forEach((p,i)=>{
+p.x+=p.vx;
+p.y+=p.vy;
+p.life--;
+if(p.life<=0) particles.splice(i,1);
+});
 
- clouds.forEach(c=>{
-  c.x+=c.speed;
-  if(c.x>canvas.width+40) c.x=-40;
- });
+clouds.forEach(c=>{
+c.x+=c.speed;
+if(c.x>canvas.width+40) c.x=-40;
+});
 
- document.getElementById("score").innerText=score;
- document.getElementById("lives").innerText=lives;
- document.getElementById("loveFill").style.width=Math.min(score*2,100)+"%";
+document.getElementById("score").innerText=score;
+document.getElementById("lives").innerText=lives;
+document.getElementById("loveFill").style.width=Math.min(score*2,100)+"%";
 
- if(combo>=3)
-  document.getElementById("combo").innerText="✨ Combo x"+combo;
- else
-  document.getElementById("combo").innerText="";
+if(combo>=3)
+document.getElementById("combo").innerText="✨ Combo x"+combo;
+else
+document.getElementById("combo").innerText="";
 
- if(score>=50){
-  playSound(winSound);
-  endGame("You filled the world with love 🦄💖");
- }
+if(score>=50){
+playSound(winSound);
+endGame("You filled the world with love 🦄💖");
+}
 
- if(lives<=0)
-  endGame("Too many broken hearts 💔");
+if(lives<=0)
+endGame("Too many broken hearts 💔");
 
 }
 
-/* DRAW */
-
 function drawCloud(x,y,s){
- ctx.fillStyle="white";
-
- ctx.beginPath();
- ctx.arc(x,y,s*0.3,0,Math.PI*2);
- ctx.arc(x+s*0.3,y-10,s*0.4,0,Math.PI*2);
- ctx.arc(x+s*0.6,y,s*0.3,0,Math.PI*2);
- ctx.fill();
+ctx.fillStyle="white";
+ctx.beginPath();
+ctx.arc(x,y,s*0.3,0,Math.PI*2);
+ctx.arc(x+s*0.3,y-10,s*0.4,0,Math.PI*2);
+ctx.arc(x+s*0.6,y,s*0.3,0,Math.PI*2);
+ctx.fill();
 }
 
 function drawRainbow(){
 
- const colors=["#ff4da6","#ff7ac3","#ffa6d9","#ffcce9"];
+const colors=["#ff4da6","#ff7ac3","#ffa6d9","#ffcce9"];
 
- colors.forEach((c,i)=>{
-  ctx.beginPath();
-  ctx.strokeStyle=c;
-  ctx.lineWidth=6*scale;
-  ctx.arc(canvas.width/2,canvas.height+120*scale,200*scale+i*10,Math.PI,2*Math.PI);
-  ctx.stroke();
- });
+colors.forEach((c,i)=>{
+ctx.beginPath();
+ctx.strokeStyle=c;
+ctx.lineWidth=6;
+ctx.arc(canvas.width/2,canvas.height+80,200+i*10,Math.PI,2*Math.PI);
+ctx.stroke();
+});
 
 }
 
 function draw(){
 
- ctx.clearRect(0,0,canvas.width,canvas.height);
+ctx.clearRect(0,0,canvas.width,canvas.height);
 
- drawRainbow();
+drawRainbow();
 
- ctx.fillStyle="white";
- stars.forEach(s=>ctx.fillRect(s.x*scale,s.y*scale,s.size*scale,s.size*scale));
+ctx.fillStyle="white";
+stars.forEach(s=>ctx.fillRect(s.x,s.y,s.size,s.size));
 
- clouds.forEach(c=>drawCloud(c.x*scale,c.y*scale,c.size*scale));
+clouds.forEach(c=>drawCloud(c.x,c.y,c.size));
 
- let float=Math.sin(time)*6*scale;
+let float=Math.sin(time)*6;
 
- ctx.font=(60*scale)+"px serif";
- ctx.fillText("🦄",player.x,player.y+40*scale+float);
+ctx.font="60px serif";
+ctx.fillText("🦄",player.x,player.y+40+float);
 
- items.forEach(it=>{
+items.forEach(it=>{
 
-  ctx.font=(34*scale)+"px serif";
+ctx.font="34px serif";
 
-  if(it.type==="love") ctx.fillText("❤️",it.x,it.y);
-  if(it.type==="broken") ctx.fillText("💔",it.x,it.y);
-  if(it.type==="gold") ctx.fillText("💖",it.x,it.y);
+if(it.type==="love") ctx.fillText("❤️",it.x,it.y);
+if(it.type==="broken") ctx.fillText("💔",it.x,it.y);
+if(it.type==="gold") ctx.fillText("💖",it.x,it.y);
 
- });
+});
 
- particles.forEach(p=>{
-  ctx.fillStyle=p.color;
-  ctx.fillRect(p.x,p.y,3*scale,3*scale);
- });
+particles.forEach(p=>{
+ctx.fillStyle=p.color;
+ctx.fillRect(p.x,p.y,3,3);
+});
 
 }
 
-/* GAME LOOP */
-
 function loop(){
- update();
- draw();
- requestAnimationFrame(loop);
+update();
+draw();
+requestAnimationFrame(loop);
 }
 
 function endGame(msg){
- running=false;
- document.getElementById("end").style.display="flex";
- document.getElementById("endText").innerText=msg;
+running=false;
+document.getElementById("end").style.display="flex";
+document.getElementById("endText").innerText=msg;
 }
 
 loop();
